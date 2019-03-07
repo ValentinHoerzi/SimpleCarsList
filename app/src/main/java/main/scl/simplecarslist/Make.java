@@ -19,4 +19,19 @@ public class Make {
     public String toString() {
         return makeName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Make make = (Make) o;
+
+        return makeName != null ? makeName.equals(make.makeName) : make.makeName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return makeName != null ? makeName.hashCode() : 0;
+    }
 }
