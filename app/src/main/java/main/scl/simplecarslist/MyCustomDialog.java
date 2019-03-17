@@ -4,28 +4,26 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.util.List;
 
 public class MyCustomDialog extends Dialog{
 
     private final Context context;
-    Button button;
-    EditText etFirstName;
-    EditText etLastName;
+    Button fbButton;
+    EditText fbEtFirstName;
+    EditText fbEtLastName;
 
-    Spinner make;
-    ArrayAdapter<Make> makeAdapter;
+    Spinner fbSpinnerMake;
+    private ArrayAdapter<Make> makeAdapter;
 
-    Spinner model;
-    ArrayAdapter<Model> modelAdapter;
+    Spinner fbSpinnerModel;
+    private ArrayAdapter<Model> modelAdapter;
 
     public MyCustomDialog(@NonNull Context context, List<Make> makes,List<Model> models) {
         super(context);
@@ -38,25 +36,19 @@ public class MyCustomDialog extends Dialog{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setCancelable(false);
         setContentView(R.layout.my_dialog_layout);
-
         initUI();
     }
 
     private void initUI() {
-        button = findViewById(R.id.fbButton);
-        etFirstName = findViewById(R.id.fbEditViewFirstname);
-        etLastName = findViewById(R.id.fbEditViewLastname);
+        fbButton = findViewById(R.id.fbButton);
+        fbEtFirstName = findViewById(R.id.fbEditViewFirstname);
+        fbEtLastName = findViewById(R.id.fbEditViewLastname);
 
-        make = findViewById(R.id.fbSpinnerMake);
-        make.setAdapter(makeAdapter);
+        fbSpinnerMake = findViewById(R.id.fbSpinnerMake);
+        fbSpinnerMake.setAdapter(makeAdapter);
 
-        model = findViewById(R.id.fbSpinnerModel);
-        model.setAdapter(modelAdapter);
-
-        button.setOnClickListener( view -> {
-
-        });
+        fbSpinnerModel = findViewById(R.id.fbSpinnerModel);
+        fbSpinnerModel.setAdapter(modelAdapter);
     }
 }

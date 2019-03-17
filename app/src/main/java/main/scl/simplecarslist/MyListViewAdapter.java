@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class MyListViewAdapter extends ArrayAdapter<Person>{
 
     private final List<Person> personList;
-    private List<Person> placeHolder;
+    private final List<Person> placeHolder;
     private final int resource;
     private final LayoutInflater inflater;
 
 
-    public MyListViewAdapter(@NonNull Context context, int resource, @NonNull List<Person> personList) {
+    public MyListViewAdapter( Context context, int resource, List<Person> personList) {
         super(context, resource,personList);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.resource = resource;
@@ -31,9 +31,8 @@ public class MyListViewAdapter extends ArrayAdapter<Person>{
         placeHolder = new ArrayList<>(personList);
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position,  View convertView,  ViewGroup parent) {
         Person person = personList.get(position);
         View listItem = (convertView==null)
                 ?inflater.inflate(resource,null)
@@ -46,18 +45,33 @@ public class MyListViewAdapter extends ArrayAdapter<Person>{
         return listItem;
     }
 
-    public void filter(String text){
+    public void filter(String text,int id){
         text = text.toLowerCase();
         personList.clear();
-        if(text.length() == 0){
+
+        if(text.length() == 0) {
             personList.addAll(placeHolder);
         }else{
             for(Person p : placeHolder){
-                if(p.getFirstName().toLowerCase().contains(text) || p.getLastName().toLowerCase().contains(text) || p.getMake().toLowerCase().contains(text) || p.getModel().toLowerCase().contains(text)){
-                    personList.add(p);
+                if(id == 0){
+                    if(p.getFirstName().toLowerCase().contains(text) || p.getLastName().toLowerCase().contains(text) || p.getMake().toLowerCase().contains(text) || p.getModel().toLowerCase().contains(text)){
+                        personList.add(p);
+                    }
+                }else if(id == 1){
+                    if(p.getMake().toString().toLowerCase().equals(text.toString().toLowerCase())){
+                        personList.add(p);
+                    }
+                }else if(id == 2){
+                    personList.addAll(placeHolder);
                 }
             }
         }
+        notifyDataSetChanged();
+    }
+
+    public void addPerson(Person p){
+        placeHolder.add(p);
+        personList.add(p);
         notifyDataSetChanged();
     }
 }

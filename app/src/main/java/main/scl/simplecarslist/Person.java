@@ -32,6 +32,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return firstName+";"+lastName+";"+make+";"+model;
+        return firstName+MainActivity.FILE_SEPERATOR+lastName+MainActivity.FILE_SEPERATOR+make+MainActivity.FILE_SEPERATOR+model;
     }
 }
