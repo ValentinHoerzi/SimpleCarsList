@@ -1,8 +1,14 @@
 package main.scl.simplecarslist;
 
+import android.app.Dialog;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -34,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     String FILE_SEPERATOR = ",";
 
+    FloatingActionButton fab;
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +54,17 @@ public class MainActivity extends AppCompatActivity {
         initListView();
         initSpinner();
         initSearchView();
+        initFloatingActionButton();
     }
+
+    private void initFloatingActionButton() {
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener((view) -> {
+            MyCustomDialog dialog = new MyCustomDialog(view.getContext(),availableMake,availableModel);
+            dialog.show();
+        });
+    }
+
 
     private void initSearchView() {
         searchView = findViewById(R.id.searchView);
