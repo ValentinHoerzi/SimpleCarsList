@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     List<Make> availableMake;
     List<Model> availableModel;
+
+    SearchView searchView;
+
     String FILE_SEPERATOR = ",";
 
 
@@ -41,6 +45,23 @@ public class MainActivity extends AppCompatActivity {
     private void initUI() {
         initListView();
         initSpinner();
+        initSearchView();
+    }
+
+    private void initSearchView() {
+        searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                listViewAdapter.filter(newText);
+                return false;
+            }
+        });
     }
 
     private void initSpinner() {
@@ -53,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
                 listViewDatasetFiltered.clear();
                 Make item = spinnerAdapter.getItem(pos);
-                //listViewDatasetFiltered = listViewDataset.stream().filter(p -> p.getMake().equals(item)).collect(Collectors.toList());
                 for(Person p : listViewDataset){
                     if(p.getMake().toString().toLowerCase().equals(item.toString().toLowerCase())){
                         listViewDatasetFiltered.add(p);
@@ -68,7 +88,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void setListViewAdapter(List<Person> data){
+        listViewAdapter = new MyListViewAdapter(getApplicationContext(),R.layout.my_list_view_layout,data);
+        listView.setAdapter(listViewAdapter);
+    }
+    private void setSpinnerAdapter(List<Make> data){
+        spinnerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,data);
+        spinner.setAdapter(spinnerAdapter);
+    }
     private void initListView() {
         listView = findViewById(R.id.listView);
         listViewDataset = new ArrayList<>();
@@ -110,21 +137,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         setListViewAdapter(listViewDataset);
-
-
         availableModel =  availableModel.stream().distinct().sorted(Comparator.comparing(Model::getModelName)).collect(Collectors.toList());
         availableMake = availableMake.stream().distinct().sorted(Comparator.comparing(Make::getMakeName)).collect(Collectors.toList());
-    }
-
-    private void setListViewAdapter(List<Person> data){
-        listViewAdapter = new MyListViewAdapter(getApplicationContext(),R.layout.my_list_view_layout,data);
-        listView.setAdapter(listViewAdapter);
-    }
-
-    private void setSpinnerAdapter(List<Make> data){
-        spinnerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,data);
-        spinner.setAdapter(spinnerAdapter);
     }
 }

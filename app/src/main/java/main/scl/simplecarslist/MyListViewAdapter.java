@@ -18,14 +18,17 @@ import java.util.stream.Collectors;
 public class MyListViewAdapter extends ArrayAdapter<Person>{
 
     private final List<Person> personList;
+    private List<Person> placeHolder;
     private final int resource;
     private final LayoutInflater inflater;
+
 
     public MyListViewAdapter(@NonNull Context context, int resource, @NonNull List<Person> personList) {
         super(context, resource,personList);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.resource = resource;
         this.personList = personList;
+        placeHolder = new ArrayList<>(personList);
     }
 
     @NonNull
@@ -41,5 +44,20 @@ public class MyListViewAdapter extends ArrayAdapter<Person>{
         ((TextView)listItem.findViewById(R.id.MAKE)).setText(person.getMake());
         ((TextView)listItem.findViewById(R.id.MODEL)).setText(person.getModel());
         return listItem;
+    }
+
+    public void filter(String text){
+        text = text.toLowerCase();
+        personList.clear();
+        if(text.length() == 0){
+            personList.addAll(placeHolder);
+        }else{
+            for(Person p : placeHolder){
+                if(p.getFirstName().toLowerCase().contains(text) || p.getLastName().toLowerCase().contains(text) || p.getMake().toLowerCase().contains(text) || p.getModel().toLowerCase().contains(text)){
+                    personList.add(p);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }
