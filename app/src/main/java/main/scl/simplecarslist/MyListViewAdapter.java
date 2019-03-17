@@ -7,9 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MyListViewAdapter extends ArrayAdapter<Person>{
 
@@ -36,7 +40,6 @@ public class MyListViewAdapter extends ArrayAdapter<Person>{
         ((TextView)listItem.findViewById(R.id.FIRSTNAME)).setText(person.getFirstName());
         ((TextView)listItem.findViewById(R.id.MAKE)).setText(person.getMake());
         ((TextView)listItem.findViewById(R.id.MODEL)).setText(person.getModel());
-
         return listItem;
     }
 }

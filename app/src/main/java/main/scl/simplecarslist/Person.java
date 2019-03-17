@@ -30,5 +30,8 @@ public class Person {
         return model;
     }
 
-
+    @Override
+    public String toString() {
+        return firstName+";"+lastName+";"+make+";"+model;
+    }
 }

@@ -2,9 +2,12 @@ package main.scl.simplecarslist;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,20 +21,20 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     MyListViewAdapter listViewAdapter;
     List<Person> listViewDataset;
+    List<Person> listViewDatasetFiltered;
 
     Spinner spinner;
     ArrayAdapter<Make> spinnerAdapter;
 
     List<Make> availableMake;
     List<Model> availableModel;
-
+    String FILE_SEPERATOR = ",";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initUI();
     }
 
@@ -42,8 +45,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSpinner() {
         spinner = findViewById(R.id.spinner);
-        spinnerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,availableMake);
-        spinner.setAdapter(spinnerAdapter);
+        listViewDatasetFiltered = new ArrayList<>();
+        setSpinnerAdapter(availableMake);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                listViewDatasetFiltered.clear();
+                Make item = spinnerAdapter.getItem(pos);
+                //listViewDatasetFiltered = listViewDataset.stream().filter(p -> p.getMake().equals(item)).collect(Collectors.toList());
+                for(Person p : listViewDataset){
+                    if(p.getMake().toString().toLowerCase().equals(item.toString().toLowerCase())){
+                        listViewDatasetFiltered.add(p);
+                    }
+                }
+                setListViewAdapter(listViewDatasetFiltered);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Toast.makeText(getApplicationContext(),"Noting",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initListView() {
@@ -53,15 +76,14 @@ public class MainActivity extends AppCompatActivity {
         availableModel = new ArrayList<>();
 
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("cars.csv")))) {
-            br.readLine();
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(openFileInput("carsExtension.csv")))){
             String line = br.readLine();
             while(line!=null){
-                String[] arr = line.split(",");
-                String firstName = arr[1];
-                String lastName = arr[2];
-                String make = arr[11];
-                String model = arr[12];
+                String[] arr = line.split(FILE_SEPERATOR);
+                String firstName = arr[0];
+                String lastName = arr[1];
+                String make = arr[2];
+                String model = arr[3];
                 availableMake.add(new Make(make));
                 availableModel.add(new Model(model));
 
@@ -69,12 +91,40 @@ public class MainActivity extends AppCompatActivity {
                 line = br.readLine();
             }
         }catch(Exception e){
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("cars.csv")))) {
+                br.readLine();
+                String line = br.readLine();
+                while(line!=null){
+                    String[] arr = line.split(FILE_SEPERATOR);
+                    String firstName = arr[1];
+                    String lastName = arr[2];
+                    String make = arr[11];
+                    String model = arr[12];
+                    availableMake.add(new Make(make));
+                    availableModel.add(new Model(model));
+
+                    listViewDataset.add(new Person(firstName,lastName,make,model));
+                    line = br.readLine();
+                }
+            }catch(Exception ee){
+            }
         }
 
-        listViewAdapter = new MyListViewAdapter(getApplicationContext(),R.layout.my_list_view_layout,listViewDataset);
-        listView.setAdapter(listViewAdapter);
+
+        setListViewAdapter(listViewDataset);
+
 
         availableModel =  availableModel.stream().distinct().sorted(Comparator.comparing(Model::getModelName)).collect(Collectors.toList());
         availableMake = availableMake.stream().distinct().sorted(Comparator.comparing(Make::getMakeName)).collect(Collectors.toList());
+    }
+
+    private void setListViewAdapter(List<Person> data){
+        listViewAdapter = new MyListViewAdapter(getApplicationContext(),R.layout.my_list_view_layout,data);
+        listView.setAdapter(listViewAdapter);
+    }
+
+    private void setSpinnerAdapter(List<Make> data){
+        spinnerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,data);
+        spinner.setAdapter(spinnerAdapter);
     }
 }
